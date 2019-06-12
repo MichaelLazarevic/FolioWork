@@ -1,0 +1,32 @@
+/* SIE CONFIDENTIAL
+PlayStation(R)4 Programmer Tool Runtime Library Release 04.008.061
+* Copyright (C) 2013 Sony Interactive Entertainment Inc.
+* All Rights Reserved.
+*/
+
+#include "ptShaderConstants.h"
+#include "ptVSOutput.hs"
+
+struct ptVSInput
+{
+	float3 m_position		: POSITION0;
+	float3 m_colour			: COLOR0;
+	float3 m_normal			: NORMAL0;
+	float2 m_texcoord		: TEXCOORD0;
+};//struct
+
+ptVSOutput main(ptVSInput _input )
+{
+	ptVSOutput l_output;
+	l_output.m_colour = _input.m_colour;
+	l_output.m_texcoord = _input.m_texcoord;
+	for(int i = 0; i < __PT_LIGHT_COUNT__; i++)
+	{
+		l_output.m_position = mul(shc_modelProjMx[i], float4(_input.m_position, 1));
+		l_output.m_normal = float3(mul(shc_normalTransMx[i], float4(_input.m_normal, 0)));
+		l_output.m_positionWorld = float3(mul(shc_modelWorldMx[i], float4(_input.m_position, 1)));
+	}
+
+	return l_output;
+}//main()
+
